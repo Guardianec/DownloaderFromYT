@@ -1,11 +1,19 @@
 import { StatusBar } from "expo-status-bar";
-import { Alert, Appearance, ColorSchemeName, Dimensions, Image, Keyboard, Linking, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert as RNAlert, Appearance, ColorSchemeName, Dimensions, Image, Keyboard, Linking, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 import ytdl from "react-native-ytdl";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MoonIcon, SunIcon } from "react-native-heroicons/outline";
 
 const { width, height } = Dimensions.get("window");
+
+const showAlert = (title: string, message: string, buttons?: { text: string, onPress: () => void}[]) => {
+  if (Platform.OS === 'web') {
+    window.alert(`${title}: ${message}`);
+  } else {
+    RNAlert.alert(title, message, buttons)
+  }
+}
 
 export default function Index() {
   const [color, setColor] = useState<ColorSchemeName | null>(Appearance.getColorScheme());
@@ -26,7 +34,7 @@ export default function Index() {
   const downloadFromUrl = async () => {
     Keyboard.dismiss();
     if (yturi === "") {
-      Alert.alert("Error", "Link box seems empty. Enter link to continue", [
+      showAlert("Error", "Link box seems empty. Enter link to continue", [
         { text: "OK", onPress: () => "" },
       ]);
     } else {
@@ -43,13 +51,13 @@ export default function Index() {
         const videoFinalUri = videoUrls[0].url;
         const audiFinalUri = audioUrls[0].url;
 
-        Alert.alert("Link Generated", "Link has been generated, tap download now to donwload video",
+        showAlert("Link Generated", "Link has been generated, tap download now to donwload video",
           [{ text: "OK", onPress: () => "" }]
         );
         setYtVideoLink(`${videoFinalUri}&title=${title}`);
         setYtAudioLink(`${audiFinalUri}&title=${title}`);
       } catch (error) {
-        Alert.alert("Error", "Failed to retrieve video information");
+        showAlert("Error", "Failed to retrieve video information");
       }
     }
   };
@@ -121,7 +129,7 @@ export default function Index() {
             className="w-48 ml-auto mr-auto"
             onPress={() => {
               if (ytVideoLink === "") {
-                Alert.alert(
+                showAlert(
                   "Error",
                   "No link generated yet, please generate link first",
                   [{ text: "OK", onPress: () => ""}]
@@ -140,7 +148,7 @@ export default function Index() {
             className="w-48 ml-auto mr-auto"
             onPress={() => {
               if (ytAudioLink === "") {
-                Alert.alert(
+                showAlert(
                   "Error",
                   "No link generated yet, please generate link first",
                   [{ text: "OK", onPress: () => ""}]
